@@ -63,7 +63,6 @@ class GameView(context: Context) : SurfaceView(context) {
             speedY *= -1
         }
 
-
         canvas.drawColor(Color.GREEN)
         canvas.drawRect(posX, posY, posX + size, posY + size, paint)
 
