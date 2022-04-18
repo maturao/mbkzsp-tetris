@@ -3,6 +3,7 @@ package cz.zcu.maturao.tetris.logic
 import android.graphics.Color
 
 object TetrisColors {
+    val cyan = Color.parseColor("#00FFFF")
     val blue = Color.parseColor("#0341AE")
     val green = Color.parseColor("#72CB3B")
     val yellow = Color.parseColor("#FFD500")
@@ -10,5 +11,3 @@ object TetrisColors {
     val red = Color.parseColor("#FF3213")
     val purple = Color.parseColor("#800080")
 }
-
-

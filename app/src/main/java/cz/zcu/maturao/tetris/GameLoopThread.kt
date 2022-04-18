@@ -13,7 +13,6 @@ class GameLoopThread(private val view: GameView) : Thread() {
     override fun run() {
         val windowService = view.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val fps = windowService.defaultDisplay.refreshRate
-
         val ticksPS: Long = 1000 / fps.roundToLong()
         var startTime: Long
         var sleepTime: Long

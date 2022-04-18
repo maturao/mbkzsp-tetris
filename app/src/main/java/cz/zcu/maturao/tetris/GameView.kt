@@ -46,7 +46,7 @@ class GameView(context: Context) : SurfaceView(context) {
     private var speedY = 30f
 
     private val paint = Paint().apply {
-        color = Color.RED
+        color = 0xff_ff_00_00.toInt()
     }
 
     public override fun onDraw(canvas: Canvas) {
@@ -63,7 +63,7 @@ class GameView(context: Context) : SurfaceView(context) {
             speedY *= -1
         }
 
-        canvas.drawColor(Color.GREEN)
+        canvas.drawColor(Color.BLACK)
         canvas.drawRect(posX, posY, posX + size, posY + size, paint)
 
     }
