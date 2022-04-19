@@ -9,19 +9,16 @@ class Shape private constructor(val squares: Matrix<Square>) {
         const val SHAPE_SIZE = 4
         const val SHAPE_FULL_CHAR = '#'
 
-        private fun fromString(color: Int, string: String): Shape {
+        private fun fromString(fullSquare: Square.Full, string: String): Shape {
             val lines = string.lines()
 
             if (lines.size != SHAPE_SIZE) throw IllegalArgumentException("Shape string must have $SHAPE_SIZE lines")
             if (lines.any { it.length != SHAPE_SIZE }) throw IllegalArgumentException("Each line in shape string must contain $SHAPE_SIZE characters")
 
             val matrix = Matrix<Square>(SHAPE_SIZE, SHAPE_SIZE, Square.Empty)
-            val fullSquare = Square.Full.Colored(color)
 
-            for (i in 0 until SHAPE_SIZE) {
-                for (j in 0 until SHAPE_SIZE) {
-                    if (lines[i][j] == SHAPE_FULL_CHAR) matrix[i, j] = fullSquare
-                }
+            for ((i, j) in matrix.indices) {
+                if (lines[i][j] == SHAPE_FULL_CHAR) matrix[i, j] = fullSquare
             }
 
             return Shape(matrix)
@@ -31,7 +28,7 @@ class Shape private constructor(val squares: Matrix<Square>) {
 
         val shapes = listOf(
             fromString(
-                TetrisColors.cyan, """
+                Square.Full.Cyan, """
                 ,,,,
                 ,,,,
                 ####
@@ -39,7 +36,7 @@ class Shape private constructor(val squares: Matrix<Square>) {
             """.trimIndent()
             ),
             fromString(
-                TetrisColors.blue, """
+                Square.Full.Blue, """
                 ,,,,
                 #,,,
                 ###,
@@ -47,7 +44,7 @@ class Shape private constructor(val squares: Matrix<Square>) {
             """.trimIndent()
             ),
             fromString(
-                TetrisColors.orange, """
+                Square.Full.Orange, """
                 ,,,,
                 ,,#,
                 ###,
@@ -55,7 +52,7 @@ class Shape private constructor(val squares: Matrix<Square>) {
             """.trimIndent()
             ),
             fromString(
-                TetrisColors.yellow, """
+                Square.Full.Yellow, """
                 ,,,,
                 ,##,
                 ,##,
@@ -63,7 +60,7 @@ class Shape private constructor(val squares: Matrix<Square>) {
             """.trimIndent()
             ),
             fromString(
-                TetrisColors.green, """
+                Square.Full.Green, """
                 ,,,,
                 ,##,
                 ##,,
@@ -71,7 +68,7 @@ class Shape private constructor(val squares: Matrix<Square>) {
             """.trimIndent()
             ),
             fromString(
-                TetrisColors.purple, """
+                Square.Full.Purple, """
                 ,,,,
                 ,#,,
                 ###,
@@ -79,7 +76,7 @@ class Shape private constructor(val squares: Matrix<Square>) {
             """.trimIndent()
             ),
             fromString(
-                TetrisColors.red, """
+                Square.Full.Red, """
                 ,,,,
                 ##,,
                 ,##,

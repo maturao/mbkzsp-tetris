@@ -1,21 +1,23 @@
 package cz.zcu.maturao.tetris.logic
 
-sealed interface Square {
-    val color: Int
-    infix fun collidesWith(square: Square): Boolean
+sealed class Square(val color: Int) {
+    abstract fun collidesWith(square: Square): Boolean
 
-    object Empty : Square {
-        override val color = 0
+    object Empty : Square(0) {
         override fun collidesWith(square: Square) = false
     }
 
-    sealed interface Full : Square {
+    sealed class Full(color: Int) : Square(color) {
         override fun collidesWith(square: Square) = square is Full
 
-        object Void : Full {
-            override val color: Int = 0x000000FF
-        }
+        object Wall : Full(0xFF_000000.toInt())
 
-        class Colored(override val color: Int) : Full
+        object Cyan : Full(TetrisColors.CYAN)
+        object Blue : Full(TetrisColors.BLUE)
+        object Orange : Full(TetrisColors.ORANGE)
+        object Yellow : Full(TetrisColors.YELLOW)
+        object Green : Full(TetrisColors.GREEN)
+        object Purple : Full(TetrisColors.PURPLE)
+        object Red : Full(TetrisColors.RED)
     }
 }

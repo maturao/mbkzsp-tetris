@@ -5,13 +5,10 @@ class Matrix<T>(val height: Int, val width: Int, private val defaultValue: T) {
 
     private fun getIndex(row: Int, col: Int) = row * width + col
 
-
     operator fun get(row: Int, col: Int) = values[getIndex(row, col)]
     operator fun set(row: Int, col: Int, value: T) {
         values[getIndex(row, col)] = value
     }
-
-    fun getOrNull(row: Int, col: Int) = values.getOrNull(getIndex(row, col))
 
     val indices: Sequence<Pair<Int, Int>>
         get() = (0 until height)
@@ -22,10 +19,14 @@ class Matrix<T>(val height: Int, val width: Int, private val defaultValue: T) {
                     .map { j -> i to j }
             }
 
+    fun withIndices(): Sequence<Triple<Int, Int, T>> = indices
+        .zip(values.asSequence())
+        .map { (ij, value) -> Triple(ij.first, ij.second, value) }
+
     fun rotated(): Matrix<T> =
         Matrix(width, height, defaultValue).also { result ->
-            for ((i, j) in indices) {
-                result[j, height - i - 1] = this[i, j]
+            for ((i, j, value) in withIndices()) {
+                result[j, height - i - 1] = value
             }
         }
 

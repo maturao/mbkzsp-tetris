@@ -3,15 +3,33 @@ package cz.zcu.maturao.tetris
 import android.content.Context
 import android.graphics.*
 import android.os.Build
-import android.view.SurfaceHolder
-import android.view.SurfaceView
-import android.view.WindowManager
+import android.util.Log
+import android.view.*
 import androidx.annotation.RequiresApi
 
 class GameView(context: Context) : SurfaceView(context) {
     private val gameLoopThread = GameLoopThread(this)
+    private val game = Game()
 
     init {
+        setOnTouchListener(object : OnSwipeTouchListener(context) {
+            override fun onSwipeTop() {
+                game.stack.rotateBlock()
+            }
+
+            override fun onSwipeLeft() {
+                game.stack.setBlockCol(game.stack.block.col - 1)
+            }
+
+            override fun onSwipeRight() {
+                game.stack.setBlockCol(game.stack.block.col + 1)
+            }
+
+            override fun onSwipeBottom() {
+                game.stack.setBlockRow(game.stack.block.row + 1)
+            }
+        })
+
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 gameLoopThread.running = true
@@ -40,31 +58,8 @@ class GameView(context: Context) : SurfaceView(context) {
         })
     }
 
-    private var posX = 0f
-    private var posY = 0f
-    private var speedX = 30f
-    private var speedY = 30f
-
-    private val paint = Paint().apply {
-        color = 0xff_ff_00_00.toInt()
-    }
-
     public override fun onDraw(canvas: Canvas) {
-        posX += speedX
-        posY += speedY
-
-        val size = 500f
-
-        if (posX !in 0f..(width - size)) {
-            speedX *= -1
-        }
-
-        if (posY !in 0f..(height - size)) {
-            speedY *= -1
-        }
-
-        canvas.drawColor(Color.BLACK)
-        canvas.drawRect(posX, posY, posX + size, posY + size, paint)
-
+        game.update()
+        game.draw(canvas)
     }
 }

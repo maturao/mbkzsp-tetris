@@ -1,31 +1,47 @@
 package cz.zcu.maturao.tetris.logic
 
+import kotlin.math.roundToLong
+
 class Stack {
     val squares = Matrix<Square>(20, 10, Square.Empty)
-    var block = randomBlock()
+    var block = newRandomBlock()
         private set
 
-    private fun randomBlock() = Block(Shape.randomShape(), 0, 0)
+    var nextFallTime: Long? = null
+    var nextFallInterval: Double = 1000.0
+
+    private fun newRandomBlock() = Shape.randomShape().let { shape ->
+        Block(
+            shape,
+            -shape.squares.height / 2,
+            squares.width / 2 - shape.squares.width / 2
+        )
+    }
 
     fun getSquare(row: Int, col: Int): Square = when {
-        col !in 0 until squares.width -> Square.Full.Void
-        row >= squares.height -> Square.Full.Void
+        col !in 0 until squares.width -> Square.Full.Wall
+        row >= squares.height -> Square.Full.Wall
         row < 0 -> Square.Empty
         else -> squares[row, col]
     }
 
     fun collidesWith(block: Block): Boolean {
-        val blockSquares = block.shape.squares
-        for ((i, j) in blockSquares.indices) {
-            if (blockSquares[i, j].collidesWith(getSquare(i, j))) return true
+        for ((i, j, square) in block.shape.squares.withIndices()) {
+            if (square.collidesWith(
+                    getSquare(
+                        block.row + i,
+                        block.col + j
+                    )
+                )
+            ) return true
         }
         return false
     }
 
     private fun add(block: Block) {
-        val blockSquares = block.shape.squares
-        for ((i, j) in blockSquares.indices) {
-            squares[block.row + i, block.col + j] = blockSquares[i, j]
+        for ((i, j, square) in block.shape.squares.withIndices()) {
+            if (square is Square.Empty || i < 0) continue
+            squares[block.row + i, block.col + j] = square
         }
     }
 
@@ -37,6 +53,8 @@ class Stack {
     }
 
     fun setBlockCol(col: Int) {
+        if (col == block.col) return
+
         val moved = block.moved(block.row, col)
         if (collidesWith(moved)) return
 
@@ -44,11 +62,28 @@ class Stack {
     }
 
     fun setBlockRow(row: Int) {
-        val moved = block.moved(block.row, block.col)
+        if (row <= block.row) return
+
+        val moved = block.moved(row, block.col)
         block = if (collidesWith(moved)) {
             add(block)
-            randomBlock()
+            newRandomBlock()
         } else moved
+
+        resetFallTime()
     }
 
+    fun checkFall() {
+        val nextFallTime = nextFallTime
+
+        if (nextFallTime == null) {
+            resetFallTime()
+        } else if (System.currentTimeMillis() > nextFallTime) {
+            setBlockRow(block.row + 1)
+        }
+    }
+
+    fun resetFallTime() {
+        nextFallTime = System.currentTimeMillis() + nextFallInterval.roundToLong()
+    }
 }
