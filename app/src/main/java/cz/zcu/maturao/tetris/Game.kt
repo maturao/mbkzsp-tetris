@@ -7,11 +7,10 @@ import cz.zcu.maturao.tetris.logic.Stack
 
 class Game {
     val stack = Stack()
-    private val paint = Paint()
+    private val stackWidth = stack.squares.width.toFloat()
+    private val stackHeight = stack.squares.height.toFloat()
 
-    init {
-        stack.setBlockRow(15)
-    }
+    private val paint = Paint()
 
     fun update() {
         stack.checkFall()
@@ -20,9 +19,9 @@ class Game {
     fun draw(canvas: Canvas) {
         canvas.drawColor(Color.BLACK)
 
-        val stackDrawHeight = canvas.height * 0.9f
-        val stackSquareSize = stackDrawHeight / stack.squares.height
-        val stackDrawWidth = stackSquareSize * stack.squares.width
+        val stackDrawHeight = canvas.height * 0.8f
+        val stackSquareSize = stackDrawHeight / stackHeight
+        val stackDrawWidth = stackSquareSize * stackWidth
 
         canvas.save()
         canvas.translate(
@@ -31,19 +30,23 @@ class Game {
         )
         canvas.scale(stackSquareSize, stackSquareSize)
 
-        for ((i, j) in stack.squares.indices) {
-            val y = i.toFloat()
-            val x = j.toFloat()
-
-            paint.apply {
-                reset()
-                style = Paint.Style.STROKE
-                strokeWidth = 0.1f
-                color = Color.LTGRAY
-            }
-
-            canvas.drawRect(x, y, x + 1, y + 1, paint)
+        paint.apply {
+            reset()
+            style = Paint.Style.STROKE
+            strokeWidth = 0.075f
+            color = Color.WHITE
         }
+
+        for (row in 1 until stackHeight.toInt()) {
+            val y = row.toFloat()
+            canvas.drawLine(0f, y, stackWidth, y, paint)
+        }
+        for (col in 1 until stackWidth.toInt()) {
+            val x = col.toFloat()
+            canvas.drawLine(x, 0f, x, stackHeight, paint)
+        }
+        paint.strokeWidth *= 2
+        canvas.drawRect(0f, 0f, stackWidth, stackHeight, paint)
 
         for ((i, j, square) in stack.squares.withIndices()) {
             val y = i.toFloat()
@@ -56,7 +59,6 @@ class Game {
 
             canvas.drawRect(x, y, x + 1, y + 1, paint)
         }
-
 
         val block = stack.block
         for ((i, j, square) in block.shape.squares.withIndices()) {

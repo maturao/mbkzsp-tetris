@@ -43,6 +43,34 @@ class Stack {
             if (square is Square.Empty || i < 0) continue
             squares[block.row + i, block.col + j] = square
         }
+        checkFullLines()
+    }
+
+    fun checkFullLines() {
+        val removedLines = mutableListOf<Int>()
+
+        rowLoop@
+        for (row in 0 until squares.height) {
+            for (col in 0 until squares.width) {
+                if (squares[row, col] is Square.Empty) {
+                    continue@rowLoop
+                }
+            }
+
+            removedLines.add(row)
+            for (col in 0 until squares.width) {
+                squares[row, col] = Square.Empty
+            }
+        }
+
+        for (removedLine in removedLines) {
+            for (row in removedLine downTo 1) {
+                for (col in 0 until squares.width) {
+                    squares[row, col] = squares[row - 1, col]
+                    squares[row - 1, col] = Square.Empty
+                }
+            }
+        }
     }
 
     fun rotateBlock() {
