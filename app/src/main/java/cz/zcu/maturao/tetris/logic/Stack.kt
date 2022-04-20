@@ -1,8 +1,11 @@
 package cz.zcu.maturao.tetris.logic
 
 import kotlin.math.roundToLong
+import kotlin.math.sign
 
 class Stack {
+    val shapeQueue = ShapeQueue()
+
     val squares = Matrix<Square>(20, 10, Square.Empty)
     var block = newRandomBlock()
         private set
@@ -10,7 +13,7 @@ class Stack {
     var nextFallTime: Long? = null
     var nextFallInterval: Double = 1000.0
 
-    private fun newRandomBlock() = Shape.randomShape().let { shape ->
+    private fun newRandomBlock() = shapeQueue.popNextShape().let { shape ->
         Block(
             shape,
             -shape.squares.height / 2,
@@ -80,28 +83,49 @@ class Stack {
         block = rotated
     }
 
-    fun setBlockCol(col: Int) {
-        if (col == block.col) return
+    enum class BlockMoveResult { NONE, MOVED, ADDED }
 
-        val moved = block.moved(block.row, col)
-        if (collidesWith(moved)) return
+    fun setBlockCol(col: Int): BlockMoveResult {
+        if (col == block.col) return BlockMoveResult.NONE
 
-        block = moved
+        val range =
+            if (col > block.col) (block.col + 1)..col
+            else (block.col - 1) downTo col
+
+        var result = BlockMoveResult.NONE
+
+        for (subCol in range) {
+            val moved = block.moved(block.row, subCol)
+            if (collidesWith(moved)) return result
+
+            block = moved
+            result = BlockMoveResult.MOVED
+        }
+
+        return result
     }
 
-    fun setBlockRow(row: Int) {
-        if (row <= block.row) return
-
-        val moved = block.moved(row, block.col)
-        block = if (collidesWith(moved)) {
-            add(block)
-            newRandomBlock()
-        } else moved
-
+    fun setBlockRow(row: Int): BlockMoveResult {
+        if (row <= block.row) return BlockMoveResult.NONE
         resetFallTime()
+
+        for (subRow in (block.row + 1)..row) {
+            val moved = block.moved(subRow, block.col)
+
+            if (collidesWith(moved)) {
+                add(block)
+                block = newRandomBlock()
+                return BlockMoveResult.ADDED
+            } else {
+                block = moved
+            }
+        }
+
+        return BlockMoveResult.MOVED
     }
 
     fun checkFall() {
+        return
         val nextFallTime = nextFallTime
 
         if (nextFallTime == null) {

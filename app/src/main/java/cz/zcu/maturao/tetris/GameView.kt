@@ -1,35 +1,24 @@
 package cz.zcu.maturao.tetris
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
-import android.os.Build
-import android.util.Log
-import android.view.*
-import androidx.annotation.RequiresApi
+import android.graphics.Canvas
+import android.view.MotionEvent
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 
 class GameView(context: Context) : SurfaceView(context) {
     private val gameLoopThread = GameLoopThread(this)
-    private val game = Game()
+    private val input = Input()
+    private val game = Game(input)
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        input.update(event)
+        return true
+    }
 
     init {
-        setOnTouchListener(object : OnSwipeTouchListener(context) {
-            override fun onSwipeTop() {
-                game.stack.rotateBlock()
-            }
-
-            override fun onSwipeLeft() {
-                game.stack.setBlockCol(game.stack.block.col - 1)
-            }
-
-            override fun onSwipeRight() {
-                game.stack.setBlockCol(game.stack.block.col + 1)
-            }
-
-            override fun onSwipeBottom() {
-                game.stack.setBlockRow(game.stack.block.row + 1)
-            }
-        })
-
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 gameLoopThread.running = true
