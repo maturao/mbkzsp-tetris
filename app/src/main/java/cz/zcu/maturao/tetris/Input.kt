@@ -1,18 +1,38 @@
 package cz.zcu.maturao.tetris
 
+import android.util.Log
 import android.view.MotionEvent
 
 class Input {
-    var touchInput: TouchInput? = null
+    companion object {
+        const val tapTimeoutLength: Long = 300
+    }
+
+    private var tapTimeout: Long = 0
+    private var touchInput: TouchInput? = null
 
     fun update(event: MotionEvent) {
         synchronized(this) {
-            val oldTouchInput = touchInput
-            val actionDown = event.action == MotionEvent.ACTION_DOWN
-            val firstX = if (actionDown) event.x else oldTouchInput?.firstX ?: event.x
-            val firstY = if (actionDown) event.y else oldTouchInput?.firstY ?: event.y
+            val action = when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    tapTimeout = System.currentTimeMillis() + tapTimeoutLength
+                    TouchAction.Down
+                }
+                MotionEvent.ACTION_MOVE -> TouchAction.Move
+                MotionEvent.ACTION_UP -> {
+                    val tapTimeout = tapTimeout
+                    this.tapTimeout = 0
 
-            touchInput = TouchInput(event.action, firstX, firstY, event.x, event.y)
+                    if (System.currentTimeMillis() <= tapTimeout) TouchAction.Up.Tap
+                    else TouchAction.Up.Lift
+                }
+                else -> {
+                    Log.w("INPUT", "unexpected motion event action: ${event.action}")
+                    return
+                }
+            }
+
+            touchInput = TouchInput(action, event.x, event.y)
         }
     }
 
@@ -25,10 +45,18 @@ class Input {
     }
 }
 
+sealed interface TouchAction {
+    object Down : TouchAction
+    object Move : TouchAction
+
+    sealed interface Up : TouchAction {
+        object Tap : Up
+        object Lift : Up
+    }
+}
+
 data class TouchInput(
-    val action: Int,
-    val firstX: Float,
-    val firstY: Float,
+    val action: TouchAction,
     val x: Float,
     val y: Float,
 )

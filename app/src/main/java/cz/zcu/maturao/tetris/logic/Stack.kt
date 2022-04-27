@@ -1,24 +1,24 @@
 package cz.zcu.maturao.tetris.logic
 
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.math.sign
 
 class Stack {
-    val shapeQueue = ShapeQueue()
+    private val shapeQueue = ShapeQueue()
 
     val squares = Matrix<Square>(20, 10, Square.Empty)
+
     var block = newRandomBlock()
         private set
 
     var nextFallTime: Long? = null
+        private set
     var nextFallInterval: Double = 1000.0
+        private set
 
     private fun newRandomBlock() = shapeQueue.popNextShape().let { shape ->
-        Block(
-            shape,
-            -shape.squares.height / 2,
-            squares.width / 2 - shape.squares.width / 2
-        )
+        Block(shape, -2, (squares.width / 2.0 - shape.squares.width / 2.0).roundToInt())
     }
 
     fun getSquare(row: Int, col: Int): Square = when {
@@ -125,7 +125,7 @@ class Stack {
     }
 
     fun checkFall() {
-        return
+//        return
         val nextFallTime = nextFallTime
 
         if (nextFallTime == null) {
