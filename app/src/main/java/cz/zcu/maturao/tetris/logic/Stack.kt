@@ -2,78 +2,72 @@ package cz.zcu.maturao.tetris.logic
 
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
-import kotlin.math.sign
+
 
 class Stack {
-    private val shapeQueue = ShapeQueue()
-
     val squares = Matrix<Square>(20, 10, Square.Empty)
 
+    private val shapeQueue = ShapeQueue()
     var block = newRandomBlock()
         private set
 
-    var nextFallTime: Long? = null
-        private set
-    var nextFallInterval: Double = 1000.0
-        private set
+    private var nextFallTime: Long? = null
+    private var nextFallInterval: Double = 1000.0
 
     private fun newRandomBlock() = shapeQueue.popNextShape().let { shape ->
         Block(shape, -2, (squares.width / 2.0 - shape.squares.width / 2.0).roundToInt())
     }
 
-    fun getSquare(row: Int, col: Int): Square = when {
+    private fun getSquare(row: Int, col: Int): Square = when {
         col !in 0 until squares.width -> Square.Full.Wall
         row >= squares.height -> Square.Full.Wall
         row < 0 -> Square.Empty
         else -> squares[row, col]
     }
 
-    fun collidesWith(block: Block): Boolean {
-        for ((i, j, square) in block.shape.squares.withIndices()) {
-            if (square.collidesWith(
-                    getSquare(
-                        block.row + i,
-                        block.col + j
-                    )
-                )
-            ) return true
+    private fun collidesWith(block: Block) =
+        block.shape.squares.withIndices().any { (i, j, shapeSquare) ->
+            shapeSquare.collidesWith(getSquare(block.row + i, block.col + j))
         }
-        return false
-    }
 
     private fun add(block: Block) {
         for ((i, j, square) in block.shape.squares.withIndices()) {
-            if (square is Square.Empty || i < 0) continue
+            if (square is Square.Empty) continue
             squares[block.row + i, block.col + j] = square
         }
-        checkFullLines()
+        clearFullRows()
     }
 
-    fun checkFullLines() {
-        val removedLines = mutableListOf<Int>()
+    private fun moveRowDown(row: Int, numRows: Int) {
+        for (col in 0 until squares.width) {
+            squares[row + numRows, col] = squares[row, col]
+            squares[row, col] = Square.Empty
+        }
+    }
 
-        rowLoop@
-        for (row in 0 until squares.height) {
-            for (col in 0 until squares.width) {
-                if (squares[row, col] is Square.Empty) {
-                    continue@rowLoop
-                }
-            }
+    private fun isRowFull(row: Int) = (0 until squares.width)
+        .asSequence()
+        .map { col -> squares[row, col] }
+        .all { it is Square.Full }
 
-            removedLines.add(row)
-            for (col in 0 until squares.width) {
-                squares[row, col] = Square.Empty
+    private fun clearRow(row: Int) = (0 until squares.width)
+        .forEach { col -> squares[row, col] = Square.Empty }
+
+    private fun clearFullRows(): Int {
+        var cleared = 0
+        for (row in squares.height - 1 downTo 0) {
+            if (isRowFull(row)) {
+                clearRow(row)
+                cleared++
+            } else if (cleared > 0) {
+                moveRowDown(row, cleared)
             }
         }
+        return cleared
+    }
 
-        for (removedLine in removedLines) {
-            for (row in removedLine downTo 1) {
-                for (col in 0 until squares.width) {
-                    squares[row, col] = squares[row - 1, col]
-                    squares[row - 1, col] = Square.Empty
-                }
-            }
-        }
+    private fun resetFallTime() {
+        nextFallTime = System.currentTimeMillis() + nextFallInterval.roundToLong()
     }
 
     fun rotateBlock() {
@@ -125,7 +119,6 @@ class Stack {
     }
 
     fun checkFall() {
-//        return
         val nextFallTime = nextFallTime
 
         if (nextFallTime == null) {
@@ -133,9 +126,5 @@ class Stack {
         } else if (System.currentTimeMillis() > nextFallTime) {
             setBlockRow(block.row + 1)
         }
-    }
-
-    fun resetFallTime() {
-        nextFallTime = System.currentTimeMillis() + nextFallInterval.roundToLong()
     }
 }

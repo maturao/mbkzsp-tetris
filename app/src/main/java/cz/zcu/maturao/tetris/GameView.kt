@@ -5,12 +5,14 @@ import android.content.Context
 import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.PowerManager
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import cz.zcu.maturao.tetris.utils.debugPrint
 
 class GameView(context: Context) : SurfaceView(context) {
-    private val player: MediaPlayer = MediaPlayer.create(context.applicationContext, R.raw.tetris)
+    private val player: MediaPlayer = MediaPlayer.create(context, R.raw.tetris)
     private val gameLoopThread = GameLoopThread(this)
     private val input = Input()
     private val game = Game(input)

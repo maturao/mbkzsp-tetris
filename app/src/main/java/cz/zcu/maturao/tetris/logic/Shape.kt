@@ -1,7 +1,5 @@
 package cz.zcu.maturao.tetris.logic
 
-import kotlin.random.Random
-
 class Shape(val squares: Matrix<Square>) {
     fun rotated() = Shape(squares.rotated())
 

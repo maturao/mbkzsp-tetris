@@ -38,7 +38,7 @@ class StackController {
         when (touchInput.action) {
             TouchAction.Down -> handleTouchDownEvent(stackX, stackY)
             TouchAction.Move -> handleDragEvent(stackX, stackY)
-            TouchAction.Up.Tap -> handleTouchTapEvent(stackY, stackX)
+            TouchAction.Up.Click -> handleTouchTapEvent(stackY, stackX)
             TouchAction.Up.Lift -> {}
         }
     }
