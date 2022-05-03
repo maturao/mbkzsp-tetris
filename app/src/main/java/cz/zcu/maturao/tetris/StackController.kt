@@ -7,6 +7,7 @@ import androidx.core.graphics.withSave
 import cz.zcu.maturao.tetris.logic.Square
 import cz.zcu.maturao.tetris.logic.Stack
 import cz.zcu.maturao.tetris.utils.cleared
+import cz.zcu.maturao.tetris.utils.fitAspectRatio
 import kotlin.math.roundToInt
 
 class StackController {
@@ -35,11 +36,18 @@ class StackController {
         val stackX = (touchInput.x - drawOffsetX) / drawWidth * stackWidth
         val stackY = (touchInput.y - drawOffsetY) / drawHeight * stackHeight
 
+
         when (touchInput.action) {
             TouchAction.Down -> handleTouchDownEvent(stackX, stackY)
             TouchAction.Move -> handleDragEvent(stackX, stackY)
-            TouchAction.Up.Click -> handleTouchTapEvent(stackY, stackX)
-            TouchAction.Up.Lift -> {}
+            is TouchAction.Up -> {
+                dragStartX = null
+                dragStartY = null
+
+                if (touchInput.action == TouchAction.Up.Click) {
+                    handleTouchClickEvent(stackX, stackY)
+                }
+            }
         }
     }
 
@@ -56,10 +64,9 @@ class StackController {
         dragStartY = stackY - stack.block.row
     }
 
-    private fun handleTouchTapEvent(stackY: Float, stackX: Float) {
+    private fun handleTouchClickEvent(stackY: Float, stackX: Float) {
         if (isInsideStack(stackX, stackY)) {
             stack.rotateBlock()
-
         }
     }
 
@@ -69,8 +76,8 @@ class StackController {
     }
 
     private fun handleHorizontalDrag(stackX: Float) {
-        val dragOffsetX = dragStartX ?: return
-        val newBlockCol = (stackX - dragOffsetX).roundToInt()
+        val dragStartX = dragStartX ?: return
+        val newBlockCol = (stackX - dragStartX).roundToInt()
 
         if (stack.setBlockCol(newBlockCol) == Stack.BlockMoveResult.MOVED) {
             this.dragStartY = null
@@ -78,8 +85,8 @@ class StackController {
     }
 
     private fun handleVerticalDrag(stackY: Float) {
-        val dragOffsetY = dragStartY ?: return
-        val newBlockRow = (stackY - dragOffsetY).roundToInt()
+        val dragStartY = dragStartY ?: return
+        val newBlockRow = ((stackY - dragStartY) * 1).roundToInt()
 
         when (stack.setBlockRow(newBlockRow)) {
             Stack.BlockMoveResult.MOVED -> this.dragStartX = null
@@ -91,13 +98,15 @@ class StackController {
         }
     }
 
-    fun draw(canvas: Canvas) {
-        drawHeight = canvas.height * 0.8f
-        val stackSquareSize = drawHeight / stackHeight
-        drawWidth = stackSquareSize * stackWidth
+    fun draw(canvas: Canvas, offsetX: Float, offsetY: Float, width: Float, height: Float) {
+        val (drawWidth, drawHeight) = fitAspectRatio(width, height, stackWidth / stackHeight)
+        this.drawWidth = drawWidth
+        this.drawHeight = drawHeight
 
-        drawOffsetX = canvas.width / 2f - drawWidth / 2f
-        drawOffsetY = canvas.height / 2f - drawHeight / 2f
+        drawOffsetX = offsetX + width / 2 - drawWidth / 2
+        drawOffsetY = offsetY + height / 2 - drawHeight / 2
+
+        val stackSquareSize = drawHeight / stackHeight
 
         canvas.withSave {
             translate(drawOffsetX, drawOffsetY)
@@ -128,8 +137,24 @@ class StackController {
                 drawRect(x, y, x + 1, y + 1, paint)
             }
 
+            val ghostBlock = stack.ghostBlock
+            for ((i, j, square) in ghostBlock.shape.squares.withIndices()) {
+                if (square is Square.Empty) continue
+
+                val y = (i + ghostBlock.row).toFloat()
+                val x = (j + ghostBlock.col).toFloat()
+
+                if (y < 0) continue
+
+                val color = (square.color and 0x00_FFFFFF) or 0x7A_000000
+                paint.cleared().color = color
+                drawRect(x, y, x + 1, y + 1, paint)
+            }
+
             val block = stack.block
             for ((i, j, square) in block.shape.squares.withIndices()) {
+                if (square is Square.Empty) continue
+
                 val y = (i + block.row).toFloat()
                 val x = (j + block.col).toFloat()
 

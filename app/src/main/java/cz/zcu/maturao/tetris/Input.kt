@@ -2,10 +2,11 @@ package cz.zcu.maturao.tetris
 
 import android.util.Log
 import android.view.MotionEvent
+import java.util.concurrent.BlockingDeque
+import java.util.concurrent.LinkedBlockingDeque
 
 class Input {
     companion object {
-        private const val tapTimeoutLength: Long = 300
         private const val tapMaxMove = 2.5
         private const val tapMaxMoveSqr = tapMaxMove * tapMaxMove
 
@@ -16,61 +17,47 @@ class Input {
         }
     }
 
-    private var tapTimeout: Long = 0
-    private var oldTouchInput: TouchInput? = null
-    private var touchInput: TouchInput? = null
+    private val touchInputDeque: BlockingDeque<TouchInput> = LinkedBlockingDeque(100)
+    private var lastTouchInput: TouchInput? = null
 
     fun update(event: MotionEvent) {
-        synchronized(this) {
-            val oldTouchInput = oldTouchInput
-            var firstX = oldTouchInput?.firstX
-            var firstY = oldTouchInput?.firstY
+        val oldTouchInput = lastTouchInput
+        var firstX = oldTouchInput?.firstX
+        var firstY = oldTouchInput?.firstY
 
-            val x = event.x
-            val y = event.y
+        val x = event.x
+        val y = event.y
 
-            val action = when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    tapTimeout = System.currentTimeMillis() + tapTimeoutLength
-                    TouchAction.Down
-                }
-                MotionEvent.ACTION_MOVE -> TouchAction.Move
-                MotionEvent.ACTION_UP -> {
-                    val tapTimeout = tapTimeout
-                    this.tapTimeout = 0
+        val action = when (event.action) {
+            MotionEvent.ACTION_DOWN -> TouchAction.Down
+            MotionEvent.ACTION_MOVE -> TouchAction.Move
+            MotionEvent.ACTION_UP ->
+                if (firstX == null || firstY == null ||
+                    sqrDist(firstX, firstY, x, y) > tapMaxMoveSqr
+                ) TouchAction.Up.Lift
+                else TouchAction.Up.Click
 
-                    if (System.currentTimeMillis() > tapTimeout
-                        || firstX == null || firstY == null
-                        || Companion.sqrDist(firstX, firstY, x, y) > tapMaxMoveSqr
-                    ) TouchAction.Up.Lift
-                    else TouchAction.Up.Click
-                }
-
-                else -> {
-                    Log.e("INPUT", "unexpected motion event action: ${event.action}")
-                    return
-                }
+            else -> {
+                Log.e("Input", "Unexpected motion event action: ${event.action}")
+                TouchAction.Up.Lift
             }
+        }
 
-            if (action == TouchAction.Down) {
-                firstX = x
-                firstY = y
-            }
+        if (action == TouchAction.Move && oldTouchInput?.action == TouchAction.Move) return
 
-            touchInput = TouchInput(action, x, y, firstX ?: x, firstY ?: y)
+        if (action == TouchAction.Down) {
+            firstX = x
+            firstY = y
+        }
+
+        val newTouchInput = TouchInput(action, x, y, firstX ?: x, firstY ?: y)
+        lastTouchInput = newTouchInput
+        if (!touchInputDeque.offer(newTouchInput)) {
+            Log.e("INPUT", "New touch input does not fit into queue")
         }
     }
 
-    fun popTouchInput(): TouchInput? {
-        return synchronized(this) {
-            val tmp = touchInput
-            touchInput = null
-            if (tmp != null) {
-                oldTouchInput = tmp
-            }
-            tmp
-        }
-    }
+    fun popTouchInput(): TouchInput? = touchInputDeque.poll()
 }
 
 sealed interface TouchAction {

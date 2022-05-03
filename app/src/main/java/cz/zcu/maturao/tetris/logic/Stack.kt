@@ -7,6 +7,9 @@ import kotlin.math.roundToLong
 class Stack {
     val squares = Matrix<Square>(20, 10, Square.Empty)
 
+    private var _ghostBlock: Block? = null
+    val ghostBlock: Block get() = _ghostBlock ?: createGhostBlock().also { _ghostBlock = it }
+
     private val shapeQueue = ShapeQueue()
     var block = newRandomBlock()
         private set
@@ -75,6 +78,7 @@ class Stack {
         if (collidesWith(rotated)) return
 
         block = rotated
+        resetGhostBlock()
     }
 
     enum class BlockMoveResult { NONE, MOVED, ADDED }
@@ -90,11 +94,14 @@ class Stack {
 
         for (subCol in range) {
             val moved = block.moved(block.row, subCol)
-            if (collidesWith(moved)) return result
+
+            if (collidesWith(moved)) break
 
             block = moved
             result = BlockMoveResult.MOVED
         }
+
+        if (result == BlockMoveResult.MOVED) resetGhostBlock()
 
         return result
     }
@@ -109,6 +116,7 @@ class Stack {
             if (collidesWith(moved)) {
                 add(block)
                 block = newRandomBlock()
+                resetGhostBlock()
                 return BlockMoveResult.ADDED
             } else {
                 block = moved
@@ -126,5 +134,21 @@ class Stack {
         } else if (System.currentTimeMillis() > nextFallTime) {
             setBlockRow(block.row + 1)
         }
+    }
+
+    private fun resetGhostBlock() {
+        _ghostBlock = null
+    }
+
+    private fun createGhostBlock(): Block {
+        var ghostBlock = block
+
+        while (true) {
+            val moved = ghostBlock.moved(ghostBlock.row + 1, ghostBlock.col)
+            if (collidesWith(moved)) break
+            ghostBlock = moved
+        }
+
+        return ghostBlock
     }
 }

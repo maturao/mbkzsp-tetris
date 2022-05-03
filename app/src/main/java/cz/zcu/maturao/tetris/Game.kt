@@ -13,6 +13,14 @@ class Game(private val input: Input) {
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(Color.BLACK)
-        stackController.draw(canvas)
+
+        val stackOffsetY = 400f
+        stackController.draw(
+            canvas,
+            0f,
+            stackOffsetY,
+            canvas.width.toFloat(),
+            canvas.height - stackOffsetY,
+        )
     }
 }
