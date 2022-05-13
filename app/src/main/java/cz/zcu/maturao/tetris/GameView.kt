@@ -10,9 +10,11 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import cz.zcu.maturao.tetris.utils.debugPrint
+import java.util.prefs.Preferences
 
 class GameView(context: Context) : SurfaceView(context) {
     private val player: MediaPlayer = MediaPlayer.create(context, R.raw.tetris)
+
     private val gameLoopThread = GameLoopThread(this)
     private val input = Input()
     private val game = Game(input)

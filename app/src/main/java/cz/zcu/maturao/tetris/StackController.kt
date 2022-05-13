@@ -64,7 +64,7 @@ class StackController {
         dragStartY = stackY - stack.block.row
     }
 
-    private fun handleTouchClickEvent(stackY: Float, stackX: Float) {
+    private fun handleTouchClickEvent(stackX: Float, stackY: Float) {
         if (isInsideStack(stackX, stackY)) {
             stack.rotateBlock()
         }
