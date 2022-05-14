@@ -11,6 +11,7 @@ sealed class Square(val color: Int) {
         override fun collidesWith(square: Square) = square is Full
 
         object Wall : Full(0xFF_000000.toInt())
+        object White : Full(0xFF_FFFFFF.toInt())
 
         object Cyan : Full(TetrisColors.CYAN)
         object Blue : Full(TetrisColors.BLUE)

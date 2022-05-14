@@ -5,7 +5,12 @@ import kotlin.math.roundToLong
 
 
 class Stack {
-    val squares = Matrix<Square>(20, 10, Square.Empty)
+    companion object {
+        const val WIDTH = 10
+        const val HEIGHT = 20
+    }
+
+    val squares = Matrix<Square>(HEIGHT, WIDTH, Square.Empty)
 
     private var _ghostBlock: Block? = null
     val ghostBlock: Block get() = _ghostBlock ?: createGhostBlock().also { _ghostBlock = it }

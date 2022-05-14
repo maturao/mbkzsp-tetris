@@ -56,4 +56,15 @@ object Shapes {
                 ,,,
             """.trimIndent()
     )
+
+    val stop = Shape.fromString(
+        Square.Full.White, """
+            ##,,##
+            ##,,##
+            ##,,##
+            ##,,##
+            ##,,##
+            ##,,##
+        """.trimIndent()
+    )
 }

@@ -4,19 +4,23 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import androidx.core.graphics.withSave
-import cz.zcu.maturao.tetris.logic.Square
+import cz.zcu.maturao.tetris.logic.Block
+import cz.zcu.maturao.tetris.logic.Shapes
 import cz.zcu.maturao.tetris.logic.Stack
-import cz.zcu.maturao.tetris.utils.cleared
-import cz.zcu.maturao.tetris.utils.fitAspectRatio
+import cz.zcu.maturao.tetris.utils.*
 import kotlin.math.roundToInt
 
 class StackController {
+    var stopped = false
+
     private val stack = Stack()
+
     private val stackWidth = stack.squares.width.toFloat()
     private val stackHeight = stack.squares.height.toFloat()
 
     private var drawWidth = 1f
     private var drawHeight = 1f
+
     private var drawOffsetX = 0f
     private var drawOffsetY = 0f
 
@@ -24,12 +28,19 @@ class StackController {
     private var dragStartY: Float? = null
 
     private val paint = Paint()
+    private val stopIconBlock = Shapes.stop.let {
+        Block(
+            it,
+            (stackHeight / 2f - it.squares.height / 2f).roundToInt(),
+            (stackWidth / 2f - it.squares.width / 2f).roundToInt()
+        )
+    }
 
     fun update(touchInput: TouchInput?) {
+        if (stopped) return
+
         stack.checkFall()
-        if (touchInput != null) {
-            handleInput(touchInput)
-        }
+        if (touchInput != null) handleInput(touchInput)
     }
 
     private fun handleInput(touchInput: TouchInput) {
@@ -52,7 +63,7 @@ class StackController {
     }
 
     private fun isInsideStack(stackX: Float, stackY: Float) =
-        stackX in 0f..stackWidth && stackY in 0f..stackHeight
+        isInside(stackX, stackY, 0f, 0f, stackWidth, stackHeight)
 
     private fun handleTouchDownEvent(stackX: Float, stackY: Float) {
         dragStartX = null
@@ -86,7 +97,7 @@ class StackController {
 
     private fun handleVerticalDrag(stackY: Float) {
         val dragStartY = dragStartY ?: return
-        val newBlockRow = ((stackY - dragStartY) * 1).roundToInt()
+        val newBlockRow = (stackY - dragStartY).roundToInt()
 
         when (stack.setBlockRow(newBlockRow)) {
             Stack.BlockMoveResult.MOVED -> this.dragStartX = null
@@ -129,40 +140,10 @@ class StackController {
             paint.strokeWidth *= 2
             drawRect(0f, 0f, stackWidth, stackHeight, paint)
 
-            for ((i, j, square) in stack.squares.withIndices()) {
-                val y = i.toFloat()
-                val x = j.toFloat()
-
-                paint.cleared().color = square.color
-                drawRect(x, y, x + 1, y + 1, paint)
-            }
-
-            val ghostBlock = stack.ghostBlock
-            for ((i, j, square) in ghostBlock.shape.squares.withIndices()) {
-                if (square is Square.Empty) continue
-
-                val y = (i + ghostBlock.row).toFloat()
-                val x = (j + ghostBlock.col).toFloat()
-
-                if (y < 0) continue
-
-                val color = (square.color and 0x00_FFFFFF) or 0x7A_000000
-                paint.cleared().color = color
-                drawRect(x, y, x + 1, y + 1, paint)
-            }
-
-            val block = stack.block
-            for ((i, j, square) in block.shape.squares.withIndices()) {
-                if (square is Square.Empty) continue
-
-                val y = (i + block.row).toFloat()
-                val x = (j + block.col).toFloat()
-
-                if (y < 0) continue
-
-                paint.cleared().color = square.color
-                drawRect(x, y, x + 1, y + 1, paint)
-            }
+            drawSquares(stack.squares, 0, 0)
+            drawBlock(stack.ghostBlock, alphaTransform(128))
+            drawBlock(stack.block)
+            if (stopped) drawBlock(stopIconBlock, alphaTransform(225))
         }
     }
 }
