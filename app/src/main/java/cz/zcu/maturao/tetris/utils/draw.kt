@@ -36,7 +36,14 @@ inline fun Canvas.drawSquare(
     val x = col.toFloat()
     val y = row.toFloat()
 
-    drawRect(x, y, x + 1f, y + 1f, globalPaint.cleared { color = squareColor })
+    val margin = 0.05f
+
+    drawRect(
+        x + margin,
+        y + margin,
+        x + 1f - margin,
+        y + 1f - margin,
+        globalPaint.cleared { color = squareColor })
 }
 
 inline fun Canvas.drawSquares(

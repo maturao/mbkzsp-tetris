@@ -129,14 +129,14 @@ class StackController {
                 color = Color.WHITE
             }
 
-            for (row in 1 until stackHeight.toInt()) {
-                val y = row.toFloat()
-                drawLine(0f, y, stackWidth, y, paint)
-            }
-            for (col in 1 until stackWidth.toInt()) {
-                val x = col.toFloat()
-                drawLine(x, 0f, x, stackHeight, paint)
-            }
+//            for (row in 1 until stackHeight.toInt()) {
+//                val y = row.toFloat()
+//                drawLine(0f, y, stackWidth, y, paint)
+//            }
+//            for (col in 1 until stackWidth.toInt()) {
+//                val x = col.toFloat()
+//                drawLine(x, 0f, x, stackHeight, paint)
+//            }
             paint.strokeWidth *= 2
             drawRect(0f, 0f, stackWidth, stackHeight, paint)
 
