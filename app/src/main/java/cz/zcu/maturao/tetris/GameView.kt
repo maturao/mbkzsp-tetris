@@ -4,20 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.media.MediaPlayer
-import android.os.PowerManager
-import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import cz.zcu.maturao.tetris.utils.debugPrint
-import java.util.prefs.Preferences
 
-class GameView(context: Context) : SurfaceView(context) {
-    private val player: MediaPlayer = MediaPlayer.create(context, R.raw.tetris)
+class GameView(val gameActivity: GameActivity) : SurfaceView(gameActivity) {
+//    private val player: MediaPlayer = MediaPlayer.create(context, R.raw.tetris)
 
     private val gameLoopThread = GameLoopThread(this)
     private val input = Input()
-    private val game = Game(input)
+
+    val game = Game(this, input)
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -26,7 +23,7 @@ class GameView(context: Context) : SurfaceView(context) {
     }
 
     init {
-        player.isLooping = true
+//        player.isLooping = true
 //        player.start()
 
         holder.addCallback(object : SurfaceHolder.Callback {

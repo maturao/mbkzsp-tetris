@@ -1,10 +1,11 @@
 package cz.zcu.maturao.tetris.logic
 
+import java.io.Serializable
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 
-class Stack {
+class Stack : Serializable {
     companion object {
         const val WIDTH = 10
         const val HEIGHT = 20

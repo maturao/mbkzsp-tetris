@@ -2,48 +2,71 @@ package cz.zcu.maturao.tetris
 
 import android.graphics.Canvas
 import android.graphics.Color
-import cz.zcu.maturao.tetris.drawing.StartIcon
+import cz.zcu.maturao.tetris.drawing.HomeIcon
+import cz.zcu.maturao.tetris.drawing.ResumeIcon
 import cz.zcu.maturao.tetris.drawing.StopIcon
+import cz.zcu.maturao.tetris.ui.CanvasButton
 import cz.zcu.maturao.tetris.ui.CanvasToggleButton
 
-class Game(private val input: Input) {
-    private val stackController = StackController()
+class Game(val gameView: GameView, private val input: Input) {
+    private val buttonColor = Color.WHITE
+
+    val stackController = StackController()
     private val stopToggleButton =
         CanvasToggleButton(
-            StartIcon(Color.WHITE),
-            StopIcon(Color.WHITE)
+            ResumeIcon(buttonColor),
+            StopIcon(buttonColor)
         ) { stackController.stopped = it }
+
+
+    var stopped: Boolean
+        get() = stopToggleButton.toggled
+        set(value) {
+            stopToggleButton.toggled = value
+        }
+
+    private val homeButton = CanvasButton(HomeIcon(buttonColor)) {
+        gameView.gameActivity.exit()
+    }
 
     fun update() {
         val touchInput = input.popTouchInput()
 
         stopToggleButton.update(touchInput)
+        homeButton.update(touchInput)
         stackController.update(touchInput)
     }
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(Color.BLACK)
 
-        val stopButtonMargin = 80f
-        val stopButtonSize = 140f
+        val buttonMargin = 80f
+        val buttonSize = 140f
         stopToggleButton.draw(
             canvas,
-            stopButtonMargin,
-            stopButtonMargin,
-            stopButtonSize,
-            stopButtonSize
+            buttonMargin,
+            buttonMargin,
+            buttonSize,
+            buttonSize
+        )
+        homeButton.draw(
+            canvas,
+            canvas.width - buttonSize - buttonMargin,
+            buttonMargin,
+            buttonSize,
+            buttonSize
         )
 
+
         val stackMarginTop = 400f
-        val stackMarginBottom = 100f
-        val stackMarginX = 100f
+        val stackMargin = 100f
 
         stackController.draw(
             canvas,
-            stackMarginX,
+            stackMargin,
             stackMarginTop,
-            canvas.width.toFloat() - stackMarginX * 2,
-            canvas.height - stackMarginTop - stackMarginBottom,
+            canvas.width.toFloat() - stackMargin * 2,
+            canvas.height - stackMarginTop - stackMargin,
         )
     }
 }

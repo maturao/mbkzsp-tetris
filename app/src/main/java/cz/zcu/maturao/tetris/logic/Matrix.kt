@@ -1,6 +1,8 @@
 package cz.zcu.maturao.tetris.logic
 
-class Matrix<T>(val height: Int, val width: Int, private val defaultValue: T) {
+import java.io.Serializable
+
+class Matrix<T>(val height: Int, val width: Int, private val defaultValue: T) : Serializable {
     private val values = MutableList(height * width) { defaultValue }
 
     private fun getIndex(row: Int, col: Int) = row * width + col

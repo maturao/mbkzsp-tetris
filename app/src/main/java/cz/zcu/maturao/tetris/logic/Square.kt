@@ -1,6 +1,8 @@
 package cz.zcu.maturao.tetris.logic
 
-sealed class Square(val color: Int) {
+import java.io.Serializable
+
+sealed class Square(val color: Int) : Serializable {
     abstract fun collidesWith(square: Square): Boolean
 
     object Empty : Square(0) {

@@ -1,8 +1,9 @@
 package cz.zcu.maturao.tetris.logic
 
+import java.io.Serializable
 import java.util.*
 
-class ShapeQueue {
+class ShapeQueue : Serializable {
     companion object {
         private val allShapes = listOf(
             Shapes.I,
@@ -13,9 +14,9 @@ class ShapeQueue {
             Shapes.T,
             Shapes.Z,
         )
-    }
 
-    private val rand = Random()
+        private val rand = Random()
+    }
 
     var nextShape = randomShape()
         private set

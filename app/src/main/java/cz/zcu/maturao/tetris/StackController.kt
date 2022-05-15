@@ -13,10 +13,10 @@ import kotlin.math.roundToInt
 class StackController {
     var stopped = false
 
-    private val stack = Stack()
+    var stack = Stack()
 
-    private val stackWidth = stack.squares.width.toFloat()
-    private val stackHeight = stack.squares.height.toFloat()
+    private val stackWidth get()= stack.squares.width.toFloat()
+    private val stackHeight get() = stack.squares.height.toFloat()
 
     private var drawWidth = 1f
     private var drawHeight = 1f

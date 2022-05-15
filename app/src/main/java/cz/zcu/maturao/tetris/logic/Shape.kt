@@ -1,6 +1,8 @@
 package cz.zcu.maturao.tetris.logic
 
-class Shape(val squares: Matrix<Square>) {
+import java.io.Serializable
+
+class Shape(val squares: Matrix<Square>) : Serializable {
     fun rotated() = Shape(squares.rotated())
 
     companion object {
