@@ -15,7 +15,7 @@ class StackController {
 
     var stack = Stack()
 
-    private val stackWidth get()= stack.squares.width.toFloat()
+    private val stackWidth get() = stack.squares.width.toFloat()
     private val stackHeight get() = stack.squares.height.toFloat()
 
     private var drawWidth = 1f
@@ -90,7 +90,7 @@ class StackController {
         val dragStartX = dragStartX ?: return
         val newBlockCol = (stackX - dragStartX).roundToInt()
 
-        if (stack.setBlockCol(newBlockCol) == Stack.BlockMoveResult.MOVED) {
+        if (stack.setBlockCol(newBlockCol) != Stack.BlockMoveResult.NONE) {
             this.dragStartY = null
         }
     }
@@ -101,7 +101,7 @@ class StackController {
 
         when (stack.setBlockRow(newBlockRow)) {
             Stack.BlockMoveResult.MOVED -> this.dragStartX = null
-            Stack.BlockMoveResult.ADDED -> {
+            Stack.BlockMoveResult.COLLISION -> {
                 this.dragStartX = null
                 this.dragStartY = null
             }

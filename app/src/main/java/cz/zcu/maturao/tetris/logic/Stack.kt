@@ -87,7 +87,7 @@ class Stack : Serializable {
         resetGhostBlock()
     }
 
-    enum class BlockMoveResult { NONE, MOVED, ADDED }
+    enum class BlockMoveResult { NONE, COLLISION, MOVED }
 
     fun setBlockCol(col: Int): BlockMoveResult {
         if (col == block.col) return BlockMoveResult.NONE
@@ -96,18 +96,22 @@ class Stack : Serializable {
             if (col > block.col) (block.col + 1)..col
             else (block.col - 1) downTo col
 
-        var result = BlockMoveResult.NONE
+        var result = BlockMoveResult.MOVED
+        var isMoved = false
 
         for (subCol in range) {
             val moved = block.moved(block.row, subCol)
 
-            if (collidesWith(moved)) break
+            if (collidesWith(moved)) {
+                result = BlockMoveResult.COLLISION
+                break
+            }
 
             block = moved
-            result = BlockMoveResult.MOVED
+            isMoved = true
         }
 
-        if (result == BlockMoveResult.MOVED) resetGhostBlock()
+        if (isMoved) resetGhostBlock()
 
         return result
     }
@@ -123,7 +127,7 @@ class Stack : Serializable {
                 add(block)
                 block = newRandomBlock()
                 resetGhostBlock()
-                return BlockMoveResult.ADDED
+                return BlockMoveResult.COLLISION
             } else {
                 block = moved
             }
