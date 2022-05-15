@@ -7,8 +7,9 @@ import android.util.Log
 import android.view.WindowManager
 import java.lang.Exception
 import kotlin.math.roundToLong
+import kotlin.random.Random
 
-class GameLoopThread(private val view: GameView) : Thread() {
+class GameLoopThread(private val view: GameView) : Thread("GameLoopThread ${Random.nextInt()}") {
     var running: Boolean = false
 
     @SuppressLint("WrongCall")

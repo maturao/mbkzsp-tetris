@@ -7,11 +7,14 @@ import android.media.MediaPlayer
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import cz.zcu.maturao.tetris.utils.debugLog
 
-class GameView(val gameActivity: GameActivity) : SurfaceView(gameActivity) {
+class GameView(context: Context) : SurfaceView(context) {
 //    private val player: MediaPlayer = MediaPlayer.create(context, R.raw.tetris)
 
-    private val gameLoopThread = GameLoopThread(this)
+    val gameActivity = context as GameActivity
+
+    private var gameLoopThread = GameLoopThread(this)
     private val input = Input()
 
     val game = Game(this, input)
@@ -28,6 +31,7 @@ class GameView(val gameActivity: GameActivity) : SurfaceView(gameActivity) {
 
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
+                gameLoopThread = GameLoopThread(this@GameView)
                 gameLoopThread.running = true
                 gameLoopThread.start()
             }

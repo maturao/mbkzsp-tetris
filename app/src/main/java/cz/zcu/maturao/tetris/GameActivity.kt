@@ -27,6 +27,11 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        gameView.game.stopped = true
+    }
+
     override fun onSaveInstanceState(bundle: Bundle) {
         super.onSaveInstanceState(bundle)
         saveState(bundle)
