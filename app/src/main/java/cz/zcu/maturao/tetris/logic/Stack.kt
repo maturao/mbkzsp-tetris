@@ -10,20 +10,23 @@ class Stack : Serializable {
         const val WIDTH = 10
         const val HEIGHT = 20
     }
+    private val shapeQueue = ShapeQueue()
 
     val squares = Matrix<Square>(HEIGHT, WIDTH, Square.Empty)
+
+    var gameOver = false
+        private set
+
+    var block = newRandomBlock()
+        private set
 
     private var _ghostBlock: Block? = null
     val ghostBlock: Block get() = _ghostBlock ?: createGhostBlock().also { _ghostBlock = it }
 
-    private val shapeQueue = ShapeQueue()
-    var block = newRandomBlock()
-        private set
-
     private var nextFallTime: Long? = null
     private var nextFallInterval: Double = 1000.0
 
-    private fun newRandomBlock() = shapeQueue.popNextShape().let { shape ->
+    private fun newRandomBlock() = shapeQueue.getShape().let { shape ->
         Block(shape, -2, (squares.width / 2.0 - shape.squares.width / 2.0).roundToInt())
     }
 
@@ -42,7 +45,15 @@ class Stack : Serializable {
     private fun add(block: Block) {
         for ((i, j, square) in block.shape.squares.withIndices()) {
             if (square is Square.Empty) continue
-            squares[block.row + i, block.col + j] = square
+
+            val row = block.row + i
+            val col = block.col + j
+
+            if (row in 0 until squares.height && col in 0 until squares.width) {
+                squares[row, col] = square
+            } else {
+                gameOver = true
+            }
         }
         clearFullRows()
     }

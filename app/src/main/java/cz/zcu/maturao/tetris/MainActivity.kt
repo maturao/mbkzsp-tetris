@@ -30,9 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (gameState != null) {
-            resumeButton.visibility = View.VISIBLE
-        }
+        resumeButton.visibility = if (gameState == null) View.INVISIBLE else View.VISIBLE
     }
 
     private fun newGame(view: View) {
@@ -42,9 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode != Activity.RESULT_OK) return@registerForActivityResult
-            val intent: Intent = result.data ?: return@registerForActivityResult
-            gameState = intent.getBundleExtra("state")
+            gameState = result.data?.getBundleExtra("state")
         }
 
     private fun resumeGame(view: View) {

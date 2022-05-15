@@ -38,6 +38,7 @@ class StackController {
 
     fun update(touchInput: TouchInput?) {
         if (stopped) return
+        if (stack.gameOver) return
 
         stack.checkFall()
         if (touchInput != null) handleInput(touchInput)
@@ -109,13 +110,13 @@ class StackController {
         }
     }
 
-    fun draw(canvas: Canvas, offsetX: Float, offsetY: Float, width: Float, height: Float) {
+    fun draw(canvas: Canvas, x: Float, y: Float, width: Float, height: Float) {
         val (drawWidth, drawHeight) = fitAspectRatio(width, height, stackWidth / stackHeight)
         this.drawWidth = drawWidth
         this.drawHeight = drawHeight
 
-        drawOffsetX = offsetX + width / 2 - drawWidth / 2
-        drawOffsetY = offsetY + height / 2 - drawHeight / 2
+        drawOffsetX = x + width / 2 - drawWidth / 2
+        drawOffsetY = y + height / 2 - drawHeight / 2
 
         val stackSquareSize = drawHeight / stackHeight
 
@@ -125,25 +126,37 @@ class StackController {
 
             paint.cleared {
                 style = Paint.Style.STROKE
-                strokeWidth = 0.05f
+                strokeWidth = 0.1f
                 color = Color.WHITE
             }
 
-//            for (row in 1 until stackHeight.toInt()) {
-//                val y = row.toFloat()
-//                drawLine(0f, y, stackWidth, y, paint)
-//            }
-//            for (col in 1 until stackWidth.toInt()) {
-//                val x = col.toFloat()
-//                drawLine(x, 0f, x, stackHeight, paint)
-//            }
-            paint.strokeWidth *= 2
             drawRect(0f, 0f, stackWidth, stackHeight, paint)
 
             drawSquares(stack.squares, 0, 0)
-            drawBlock(stack.ghostBlock, alphaTransform(128))
-            drawBlock(stack.block)
-            if (stopped) drawBlock(stopIconBlock, alphaTransform(225))
+            if (!stack.gameOver) {
+                drawBlock(stack.ghostBlock, alphaTransform(128))
+                drawBlock(stack.block)
+                if (stopped) drawBlock(stopIconBlock, alphaTransform(225))
+            }
+        }
+
+        if (stack.gameOver) {
+            val gameOverText = "GAME OVER"
+            val desiredTextWidth = drawWidth * 0.90f
+
+            paint.cleared {
+                color = Color.WHITE
+                textSize = 100f
+                textAlign = Paint.Align.CENTER
+            }
+            paint.textSize *= desiredTextWidth / paint.measureText(gameOverText)
+
+            canvas.drawText(
+                gameOverText,
+                drawOffsetX + drawWidth / 2,
+                drawOffsetY + drawHeight / 2,
+                paint
+            )
         }
     }
 }

@@ -9,14 +9,16 @@ import kotlin.properties.Delegates
 class CanvasToggleButton(
     val toggledDrawable: Drawable,
     val untoggledDrawable: Drawable,
-    val onToggle: (Boolean) -> Unit
+    val onToggle: (Boolean) -> Boolean
 ) {
-    var toggled: Boolean by Delegates.observable(false) { _, oldValue, newValue ->
-        if (oldValue == newValue) return@observable
-
-        canvasButton.drawable = if (toggled) toggledDrawable else untoggledDrawable
-        onToggle(toggled)
-    }
+    var toggled = false
+        set(value) {
+            if (value == field) return
+            if (onToggle(value)) {
+                field = value
+                canvasButton.drawable = if (toggled) toggledDrawable else untoggledDrawable
+            }
+        }
 
     private val canvasButton = CanvasButton(untoggledDrawable) { toggled = !toggled }
 

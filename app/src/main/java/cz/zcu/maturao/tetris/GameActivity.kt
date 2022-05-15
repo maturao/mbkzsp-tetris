@@ -20,7 +20,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (gameView.game.stopped) {
+        if (gameView.game.stopped || gameView.game.stackController.stack.gameOver) {
             exit()
         } else {
             gameView.game.stopped = true
@@ -43,11 +43,13 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun exit() {
-        val data = Intent()
-        val state = Bundle()
-        saveState(state)
-        data.putExtra("state", state)
-        setResult(Activity.RESULT_OK, data)
+        if (!gameView.game.stackController.stack.gameOver) {
+            val data = Intent()
+            val state = Bundle()
+            saveState(state)
+            data.putExtra("state", state)
+            setResult(Activity.RESULT_OK, data)
+        }
         finish()
     }
 

@@ -23,7 +23,7 @@ class ShapeQueue : Serializable {
 
     private fun randomShape() = allShapes[rand.nextInt(allShapes.size)]
 
-    fun popNextShape(): Shape {
+    fun getShape(): Shape {
         val shape = nextShape
         do {
             nextShape = randomShape()

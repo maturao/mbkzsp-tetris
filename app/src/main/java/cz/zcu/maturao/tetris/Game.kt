@@ -8,7 +8,7 @@ import cz.zcu.maturao.tetris.drawing.StopIcon
 import cz.zcu.maturao.tetris.ui.CanvasButton
 import cz.zcu.maturao.tetris.ui.CanvasToggleButton
 
-class Game(val gameView: GameView, private val input: Input) {
+class Game(private val gameView: GameView, private val input: Input) {
     private val buttonColor = Color.WHITE
 
     val stackController = StackController()
@@ -16,13 +16,19 @@ class Game(val gameView: GameView, private val input: Input) {
         CanvasToggleButton(
             ResumeIcon(buttonColor),
             StopIcon(buttonColor)
-        ) { stackController.stopped = it }
-
+        ) {
+            if (!stackController.stack.gameOver) {
+                stackController.stopped = it
+                true
+            } else false
+        }
 
     var stopped: Boolean
         get() = stopToggleButton.toggled
         set(value) {
-            stopToggleButton.toggled = value
+            if (!stackController.stack.gameOver) {
+                stopToggleButton.toggled = value
+            }
         }
 
     private val homeButton = CanvasButton(HomeIcon(buttonColor)) {
