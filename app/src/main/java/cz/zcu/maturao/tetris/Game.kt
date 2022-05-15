@@ -1,21 +1,28 @@
 package cz.zcu.maturao.tetris
 
+import android.app.Activity
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import cz.zcu.maturao.tetris.drawing.HomeIcon
 import cz.zcu.maturao.tetris.drawing.ResumeIcon
 import cz.zcu.maturao.tetris.drawing.StopIcon
 import cz.zcu.maturao.tetris.ui.CanvasButton
 import cz.zcu.maturao.tetris.ui.CanvasToggleButton
+import cz.zcu.maturao.tetris.utils.cleared
+import cz.zcu.maturao.tetris.utils.drawCenteredText
 
 class Game(private val gameView: GameView, private val input: Input) {
-    private val buttonColor = Color.WHITE
+    private val foregroundColor = Color.WHITE
+    private val paint = Paint()
+    private var scoreCache = 0
 
     val stackController = StackController()
     private val stopToggleButton =
         CanvasToggleButton(
-            ResumeIcon(buttonColor),
-            StopIcon(buttonColor)
+            ResumeIcon(foregroundColor),
+            StopIcon(foregroundColor)
         ) {
             if (!stackController.stack.gameOver) {
                 stackController.stopped = it
@@ -31,7 +38,7 @@ class Game(private val gameView: GameView, private val input: Input) {
             }
         }
 
-    private val homeButton = CanvasButton(HomeIcon(buttonColor)) {
+    private val homeButton = CanvasButton(HomeIcon(foregroundColor)) {
         gameView.gameActivity.exit()
     }
 
@@ -41,38 +48,67 @@ class Game(private val gameView: GameView, private val input: Input) {
         stopToggleButton.update(touchInput)
         homeButton.update(touchInput)
         stackController.update(touchInput)
+        updateHighScore()
+    }
+
+    private fun updateHighScore() {
+        val score = stackController.stack.score.score
+        if (scoreCache != score) {
+            scoreCache = score
+            val sharedPreferences = gameView.context.getSharedPreferences(
+                "cz.zcu.maturao.tetris",
+                Activity.MODE_PRIVATE
+            )
+            val highScore = sharedPreferences.getInt("highScore", 0)
+            if (score > highScore) {
+                val editor = sharedPreferences.edit()
+                editor.putInt("highScore", score)
+                editor.apply()
+            }
+        }
     }
 
     fun draw(canvas: Canvas) {
         canvas.drawColor(Color.BLACK)
 
-        val buttonMargin = 80f
+        val margin = 80f
         val buttonSize = 140f
         stopToggleButton.draw(
             canvas,
-            buttonMargin,
-            buttonMargin,
+            margin,
+            margin,
             buttonSize,
             buttonSize
         )
         homeButton.draw(
             canvas,
-            canvas.width - buttonSize - buttonMargin,
-            buttonMargin,
+            canvas.width - buttonSize - margin,
+            margin,
             buttonSize,
             buttonSize
         )
 
+        val score = gameView.game.stackController.stack.score
+        paint.cleared {
+            color = foregroundColor
+            textSize = buttonSize
+            isFakeBoldText = true
+        }
+        canvas.drawCenteredText(
+            score.score.toString(),
+            canvas.width / 2f,
+            margin + buttonSize / 2,
+            paint
+        )
 
         val stackMarginTop = 400f
-        val stackMargin = 100f
 
         stackController.draw(
             canvas,
-            stackMargin,
+            margin,
             stackMarginTop,
-            canvas.width.toFloat() - stackMargin * 2,
-            canvas.height - stackMarginTop - stackMargin,
+            canvas.width.toFloat() - margin * 2,
+            canvas.height - stackMarginTop - margin,
         )
     }
 }

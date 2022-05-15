@@ -2,12 +2,14 @@ package cz.zcu.maturao.tetris.utils
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 import cz.zcu.maturao.tetris.logic.Block
 import cz.zcu.maturao.tetris.logic.Matrix
 import cz.zcu.maturao.tetris.logic.Square
 import cz.zcu.maturao.tetris.logic.Stack
 
 val globalPaint = Paint()
+val globalRect = Rect()
 
 inline fun Paint.cleared(block: Paint.() -> Unit = {}) = apply(Paint::reset).apply(block)
 
@@ -18,6 +20,17 @@ fun fitAspectRatio(width: Float, height: Float, aspectRatio: Float) =
 
 fun isInside(x: Float, y: Float, offsetX: Float, offsetY: Float, width: Float, height: Float) =
     (offsetX <= x && x < offsetX + width) && (offsetY <= y && y < offsetY + height)
+
+fun Canvas.drawCenteredText(text: String, x: Float, y: Float, paint: Paint) {
+    val bounds = globalRect
+    paint.getTextBounds(text, 0, text.length, bounds)
+    drawText(
+        text,
+        x - bounds.width() / 2f - bounds.left,
+        y + bounds.height() / 2f - bounds.bottom,
+        paint
+    )
+}
 
 typealias ColorTransform = (Int) -> Int
 

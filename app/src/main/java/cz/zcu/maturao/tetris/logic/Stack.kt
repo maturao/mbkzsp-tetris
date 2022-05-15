@@ -1,6 +1,7 @@
 package cz.zcu.maturao.tetris.logic
 
 import java.io.Serializable
+import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -9,7 +10,10 @@ class Stack : Serializable {
     companion object {
         const val WIDTH = 10
         const val HEIGHT = 20
+
+        const val FALL_INTERVAL_EXP_BASE = 0.85
     }
+
     private val shapeQueue = ShapeQueue()
 
     val squares = Matrix<Square>(HEIGHT, WIDTH, Square.Empty)
@@ -20,11 +24,14 @@ class Stack : Serializable {
     var block = newRandomBlock()
         private set
 
+    @Transient
     private var _ghostBlock: Block? = null
     val ghostBlock: Block get() = _ghostBlock ?: createGhostBlock().also { _ghostBlock = it }
 
+    @Transient
     private var nextFallTime: Long? = null
-    private var nextFallInterval: Double = 1000.0
+
+    val score = Score()
 
     private fun newRandomBlock() = shapeQueue.getShape().let { shape ->
         Block(shape, -2, (squares.width / 2.0 - shape.squares.width / 2.0).roundToInt())
@@ -55,7 +62,10 @@ class Stack : Serializable {
                 gameOver = true
             }
         }
-        clearFullRows()
+        val linesCleared = clearFullRows()
+        if (linesCleared > 0) {
+            score.update(linesCleared)
+        }
     }
 
     private fun moveRowDown(row: Int, numRows: Int) {
@@ -87,7 +97,8 @@ class Stack : Serializable {
     }
 
     private fun resetFallTime() {
-        nextFallTime = System.currentTimeMillis() + nextFallInterval.roundToLong()
+        val fallInterval = (FALL_INTERVAL_EXP_BASE.pow(score.level) * 1000).roundToLong()
+        nextFallTime = System.currentTimeMillis() + fallInterval
     }
 
     fun rotateBlock() {

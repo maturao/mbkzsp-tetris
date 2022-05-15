@@ -147,11 +147,11 @@ class StackController {
             paint.cleared {
                 color = Color.WHITE
                 textSize = 100f
-                textAlign = Paint.Align.CENTER
+                isFakeBoldText = true
             }
             paint.textSize *= desiredTextWidth / paint.measureText(gameOverText)
 
-            canvas.drawText(
+            canvas.drawCenteredText(
                 gameOverText,
                 drawOffsetX + drawWidth / 2,
                 drawOffsetY + drawHeight / 2,
