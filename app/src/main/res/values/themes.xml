@@ -2,12 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.Tetris" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/black</item>
-        <item name="android:buttonStyle">@style/Theme.Tetris.Button</item>
 
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
-    </style>
-
-    <style name="Theme.Tetris.Button" parent="Widget.AppCompat.Button">
     </style>
 </resources>

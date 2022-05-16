@@ -6,6 +6,7 @@ import android.graphics.Paint
 import androidx.core.graphics.withSave
 import cz.zcu.maturao.tetris.logic.Block
 import cz.zcu.maturao.tetris.logic.Shapes
+import cz.zcu.maturao.tetris.logic.Square
 import cz.zcu.maturao.tetris.logic.Stack
 import cz.zcu.maturao.tetris.utils.*
 import kotlin.math.roundToInt
@@ -77,7 +78,25 @@ class StackController {
     }
 
     private fun handleTouchClickEvent(stackX: Float, stackY: Float) {
-        if (isInsideStack(stackX, stackY)) {
+        if (!isInsideStack(stackX, stackY)) return
+
+        var ghostBlockCollision = false
+        val ghostBlock = stack.ghostBlock
+        for ((i, j, square) in ghostBlock.shape.squares.withIndices()) {
+            if (square is Square.Empty) continue
+
+            val y = i + ghostBlock.row
+            val x = j + ghostBlock.col
+
+            if (isInside(stackX, stackY, x.toFloat(), y.toFloat(), 1f, 1f)) {
+                ghostBlockCollision = true
+                break
+            }
+        }
+
+        if (ghostBlockCollision) {
+            stack.setBlockRow(stack.squares.height)
+        } else {
             stack.rotateBlock()
         }
     }
@@ -130,7 +149,17 @@ class StackController {
                 color = Color.WHITE
             }
 
-            drawRect(0f, 0f, stackWidth, stackHeight, paint)
+            val round = 0.3f
+            val padding = round / 2f
+            drawRoundRect(
+                -padding,
+                -padding,
+                stackWidth + padding,
+                stackHeight + padding,
+                round,
+                round,
+                paint
+            )
 
             drawSquares(stack.squares)
             if (!stack.gameOver) {

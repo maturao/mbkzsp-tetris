@@ -66,11 +66,12 @@ inline fun Canvas.drawSquare(
 
     val margin = 0.05f
 
-    drawRect(
+    drawRoundRect(
         col + margin,
         row + margin,
         col + 1f - margin,
         row + 1f - margin,
+        0.1f, 0.1f,
         globalPaint.cleared { color = squareColor })
 }
 
