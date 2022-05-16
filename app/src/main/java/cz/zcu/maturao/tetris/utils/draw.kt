@@ -21,13 +21,21 @@ fun fitAspectRatio(width: Float, height: Float, aspectRatio: Float) =
 fun isInside(x: Float, y: Float, offsetX: Float, offsetY: Float, width: Float, height: Float) =
     (offsetX <= x && x < offsetX + width) && (offsetY <= y && y < offsetY + height)
 
-fun Canvas.drawCenteredText(text: String, x: Float, y: Float, paint: Paint) {
+fun Canvas.drawAnchoredText(
+    text: String,
+    x: Float,
+    y: Float,
+    paint: Paint,
+    anchorX: Float = 0.5f,
+    anchorY: Float = 0.5f,
+) {
     val bounds = globalRect
     paint.getTextBounds(text, 0, text.length, bounds)
+    paint.textAlign = Paint.Align.LEFT
     drawText(
         text,
-        x - bounds.width() / 2f - bounds.left,
-        y + bounds.height() / 2f - bounds.bottom,
+        x - bounds.width() * anchorX - bounds.left,
+        y + bounds.height() * (1f - anchorY)  - bounds.bottom,
         paint
     )
 }

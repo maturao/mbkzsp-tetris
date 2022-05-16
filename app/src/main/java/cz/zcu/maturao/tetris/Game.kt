@@ -4,14 +4,14 @@ import android.app.Activity
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
 import cz.zcu.maturao.tetris.drawing.HomeIcon
 import cz.zcu.maturao.tetris.drawing.ResumeIcon
 import cz.zcu.maturao.tetris.drawing.StopIcon
 import cz.zcu.maturao.tetris.ui.CanvasButton
 import cz.zcu.maturao.tetris.ui.CanvasToggleButton
 import cz.zcu.maturao.tetris.utils.cleared
-import cz.zcu.maturao.tetris.utils.drawCenteredText
+import cz.zcu.maturao.tetris.utils.drawAnchoredText
+import kotlin.math.sqrt
 
 class Game(private val gameView: GameView, private val input: Input) {
     private val foregroundColor = Color.WHITE
@@ -71,37 +71,58 @@ class Game(private val gameView: GameView, private val input: Input) {
     fun draw(canvas: Canvas) {
         canvas.drawColor(Color.BLACK)
 
-        val margin = 80f
-        val buttonSize = 140f
+        val size = sqrt(canvas.width * canvas.height.toFloat())
+
+        val margin = size * 0.02f
+        val elementSize = size * 0.07f
         stopToggleButton.draw(
             canvas,
             margin,
             margin,
-            buttonSize,
-            buttonSize
+            elementSize,
+            elementSize
         )
         homeButton.draw(
             canvas,
-            canvas.width - buttonSize - margin,
+            canvas.width - elementSize - margin,
             margin,
-            buttonSize,
-            buttonSize
+            elementSize,
+            elementSize
         )
 
         val score = gameView.game.stackController.stack.score
         paint.cleared {
             color = foregroundColor
-            textSize = buttonSize
+            textSize = elementSize * 0.6f
             isFakeBoldText = true
         }
-        canvas.drawCenteredText(
-            score.score.toString(),
+
+        canvas.drawAnchoredText(
+            "SCORE ${score.score}",
             canvas.width / 2f,
-            margin + buttonSize / 2,
+            margin + elementSize / 2,
             paint
         )
 
-        val stackMarginTop = 400f
+        canvas.drawAnchoredText(
+            "LEVEL ${score.level}",
+            margin,
+            elementSize + margin * 2 + elementSize / 2,
+            paint,
+            0f,
+            0.5f
+        )
+
+        canvas.drawAnchoredText(
+            "LINE ${score.lines}",
+            canvas.width - margin,
+            elementSize + margin * 2 + elementSize / 2,
+            paint,
+            1f,
+            0.5f
+        )
+
+        val stackMarginTop = elementSize * 2 + margin * 3
 
         stackController.draw(
             canvas,

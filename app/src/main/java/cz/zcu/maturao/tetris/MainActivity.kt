@@ -17,48 +17,49 @@ import java.util.prefs.Preferences
 class MainActivity : AppCompatActivity() {
     private var gameState: Bundle? = null
 
-    private lateinit var resumeButton: Button
     private lateinit var highScoreTextView: TextView
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        findViewById<Button>(R.id.newGameButton).setOnClickListener(::newGame)
-
-        resumeButton = findViewById(R.id.resumeButton)
-        resumeButton.setOnClickListener(::resumeGame)
-        resumeButton.visibility = View.INVISIBLE
-
-        highScoreTextView = findViewById(R.id.highscoreTextView)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        resumeButton.visibility = if (gameState == null) View.INVISIBLE else View.VISIBLE
-
-        val sharedPreferences = getSharedPreferences("cz.zcu.maturao.tetris", MODE_PRIVATE)
-        val highScore = sharedPreferences.getInt("highScore", 0)
-        val highScoreText = resources.getString(R.string.high_score)
-
-        highScoreTextView.text = highScoreText.format(highScore)
-    }
-
-    private fun newGame(view: View) {
-        val intent = Intent(this, GameActivity::class.java)
-        startForResult.launch(intent)
-    }
+    private lateinit var newGameButton: Button
+    private lateinit var resumeButton: Button
 
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             gameState = result.data?.getBundleExtra("state")
         }
 
-    private fun resumeGame(view: View) {
-        val intent = Intent(this, GameActivity::class.java)
-        if (gameState != null) {
-            intent.putExtra("state", gameState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        highScoreTextView = findViewById(R.id.highscoreTextView)
+        newGameButton = findViewById(R.id.newGameButton)
+        resumeButton = findViewById(R.id.resumeButton)
+
+        newGameButton.setOnClickListener {
+            startForResult.launch(launchGameIntent())
         }
-        startForResult.launch(intent)
+
+        updateResumeButton()
+        resumeButton.setOnClickListener {
+            startForResult.launch(launchGameIntent().also { it.putExtra("state", gameState) })
+        }
+    }
+
+    private fun launchGameIntent() = Intent(this, GameActivity::class.java)
+
+    private fun updateResumeButton() {
+        resumeButton.visibility = if (gameState == null) View.INVISIBLE else View.VISIBLE
+    }
+
+    private fun updateHighScoreTextView() {
+        val sharedPreferences = getSharedPreferences("cz.zcu.maturao.tetris", MODE_PRIVATE)
+        val highScore = sharedPreferences.getInt("highScore", 0)
+        val highScoreText = resources.getString(R.string.high_score)
+        highScoreTextView.text = highScoreText.format(highScore).uppercase()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateResumeButton()
+        updateHighScoreTextView()
     }
 }

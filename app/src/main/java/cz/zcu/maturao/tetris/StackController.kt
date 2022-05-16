@@ -151,7 +151,7 @@ class StackController {
             }
             paint.textSize *= desiredTextWidth / paint.measureText(gameOverText)
 
-            canvas.drawCenteredText(
+            canvas.drawAnchoredText(
                 gameOverText,
                 drawOffsetX + drawWidth / 2,
                 drawOffsetY + drawHeight / 2,
