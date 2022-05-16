@@ -18,10 +18,10 @@ class ShapeQueue : Serializable {
         private val rand = Random()
     }
 
+    private fun randomShape() = allShapes[rand.nextInt(allShapes.size)]
+
     var nextShape = randomShape()
         private set
-
-    private fun randomShape() = allShapes[rand.nextInt(allShapes.size)]
 
     fun getShape(): Shape {
         val shape = nextShape

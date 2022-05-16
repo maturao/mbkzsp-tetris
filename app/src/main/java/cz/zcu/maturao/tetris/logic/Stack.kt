@@ -14,7 +14,7 @@ class Stack : Serializable {
         const val FALL_INTERVAL_EXP_BASE = 0.85
     }
 
-    private val shapeQueue = ShapeQueue()
+    val shapeQueue = ShapeQueue()
 
     val squares = Matrix<Square>(HEIGHT, WIDTH, Square.Empty)
 

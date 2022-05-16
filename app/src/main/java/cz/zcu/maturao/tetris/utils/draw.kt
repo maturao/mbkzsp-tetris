@@ -35,7 +35,7 @@ fun Canvas.drawAnchoredText(
     drawText(
         text,
         x - bounds.width() * anchorX - bounds.left,
-        y + bounds.height() * (1f - anchorY)  - bounds.bottom,
+        y + bounds.height() * (1f - anchorY) - bounds.bottom,
         paint
     )
 }
@@ -46,37 +46,45 @@ fun alphaTransform(alpha: Int): ColorTransform = { it and 0x00_FFFFFF or (alpha 
 
 inline fun Canvas.drawSquare(
     square: Square,
-    row: Int,
-    col: Int,
-    colorTransform: ColorTransform = { it }
+    row: Float,
+    col: Float,
+    colorTransform: ColorTransform = { it },
+    outOfBounds: Boolean = false
 ) {
     if (square is Square.Empty) return
-    if (row !in 0 until Stack.HEIGHT || col !in 0 until Stack.WIDTH) return
+    if (!outOfBounds && !isInside(
+            col,
+            row,
+            0f,
+            0f,
+            Stack.WIDTH.toFloat(),
+            Stack.HEIGHT.toFloat()
+        )
+    ) return
 
     val squareColor = colorTransform(square.color)
-    val x = col.toFloat()
-    val y = row.toFloat()
 
     val margin = 0.05f
 
     drawRect(
-        x + margin,
-        y + margin,
-        x + 1f - margin,
-        y + 1f - margin,
+        col + margin,
+        row + margin,
+        col + 1f - margin,
+        row + 1f - margin,
         globalPaint.cleared { color = squareColor })
 }
 
 inline fun Canvas.drawSquares(
     squares: Matrix<Square>,
-    row: Int,
-    col: Int,
-    colorTransform: ColorTransform = { it }
+    row: Float = 0f,
+    col: Float = 0f,
+    colorTransform: ColorTransform = { it },
+    outOfBounds: Boolean = false
 ) {
     for ((i, j, square) in squares.withIndices()) {
-        drawSquare(square, row + i, col + j, colorTransform)
+        drawSquare(square, row + i, col + j, colorTransform, outOfBounds)
     }
 }
 
 inline fun Canvas.drawBlock(block: Block, colorTransform: ColorTransform = { it }) =
-    drawSquares(block.shape.squares, block.row, block.col, colorTransform)
+    drawSquares(block.shape.squares, block.row.toFloat(), block.col.toFloat(), colorTransform)

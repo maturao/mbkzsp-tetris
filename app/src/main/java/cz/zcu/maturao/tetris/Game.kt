@@ -73,7 +73,7 @@ class Game(private val gameView: GameView, private val input: Input) {
 
         val size = sqrt(canvas.width * canvas.height.toFloat())
 
-        val margin = size * 0.02f
+        val margin = size * 0.03f
         val elementSize = size * 0.07f
         stopToggleButton.draw(
             canvas,
@@ -97,6 +97,7 @@ class Game(private val gameView: GameView, private val input: Input) {
             isFakeBoldText = true
         }
 
+
         canvas.drawAnchoredText(
             "SCORE ${score.score}",
             canvas.width / 2f,
@@ -104,10 +105,12 @@ class Game(private val gameView: GameView, private val input: Input) {
             paint
         )
 
+        val middleMargin = margin * 4
+
         canvas.drawAnchoredText(
             "LEVEL ${score.level}",
             margin,
-            elementSize + margin * 2 + elementSize / 2,
+            margin + elementSize + margin + elementSize / 2,
             paint,
             0f,
             0.5f
@@ -116,13 +119,13 @@ class Game(private val gameView: GameView, private val input: Input) {
         canvas.drawAnchoredText(
             "LINE ${score.lines}",
             canvas.width - margin,
-            elementSize + margin * 2 + elementSize / 2,
+            margin + elementSize + margin + elementSize / 2,
             paint,
             1f,
             0.5f
         )
 
-        val stackMarginTop = elementSize * 2 + margin * 3
+        val stackMarginTop = margin + elementSize + margin + elementSize + middleMargin
 
         stackController.draw(
             canvas,

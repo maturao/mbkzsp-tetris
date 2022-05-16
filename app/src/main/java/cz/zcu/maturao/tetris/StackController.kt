@@ -132,11 +132,20 @@ class StackController {
 
             drawRect(0f, 0f, stackWidth, stackHeight, paint)
 
-            drawSquares(stack.squares, 0, 0)
+            drawSquares(stack.squares)
             if (!stack.gameOver) {
                 drawBlock(stack.ghostBlock, alphaTransform(128))
                 drawBlock(stack.block)
                 if (stopped) drawBlock(stopIconBlock, alphaTransform(225))
+
+                val nextShape = stack.shapeQueue.nextShape
+                val nextShapePreviewOffset = 0.5f
+                drawSquares(
+                    nextShape.squares,
+                    -nextShape.maxRow.toFloat() - 1 - nextShapePreviewOffset,
+                    stack.squares.width / 2f - nextShape.centerCol,
+                    outOfBounds = true
+                )
             }
         }
 
