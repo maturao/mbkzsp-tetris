@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tetris">
         <activity
-            android:name=".MainActivity"
+            android:name=".android.activities.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
@@ -21,7 +21,7 @@
         </activity>
 
         <activity
-            android:name=".GameActivity"
+            android:name=".android.activities.GameActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
     </application>

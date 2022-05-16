@@ -1,11 +1,11 @@
-package cz.zcu.maturao.tetris
+package cz.zcu.maturao.tetris.android.activities
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import cz.zcu.maturao.tetris.android.GameView
 import cz.zcu.maturao.tetris.logic.Stack
-import cz.zcu.maturao.tetris.utils.debugLog
 
 
 class GameActivity : AppCompatActivity() {

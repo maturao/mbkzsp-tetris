@@ -1,4 +1,4 @@
-package cz.zcu.maturao.tetris
+package cz.zcu.maturao.tetris.game
 
 import android.util.Log
 import android.view.MotionEvent

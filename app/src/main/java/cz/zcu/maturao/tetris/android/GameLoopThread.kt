@@ -1,9 +1,8 @@
-package cz.zcu.maturao.tetris
+package cz.zcu.maturao.tetris.android
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.util.Log
 import android.view.WindowManager
 import java.lang.Exception
 import kotlin.math.roundToLong
@@ -15,7 +14,7 @@ class GameLoopThread(private val view: GameView) : Thread("GameLoopThread ${Rand
     @SuppressLint("WrongCall")
     override fun run() {
         val windowService = view.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val fps = windowService.defaultDisplay.refreshRate
+        @Suppress("DEPRECATION") val fps = windowService.defaultDisplay.refreshRate
         val ticksPS: Long = 1000 / fps.roundToLong()
         var startTime: Long
         var sleepTime: Long

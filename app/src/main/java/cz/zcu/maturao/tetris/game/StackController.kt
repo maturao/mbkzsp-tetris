@@ -1,4 +1,4 @@
-package cz.zcu.maturao.tetris
+package cz.zcu.maturao.tetris.game
 
 import android.graphics.Canvas
 import android.graphics.Color

@@ -1,13 +1,14 @@
-package cz.zcu.maturao.tetris
+package cz.zcu.maturao.tetris.android
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.media.MediaPlayer
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import cz.zcu.maturao.tetris.utils.debugLog
+import cz.zcu.maturao.tetris.android.activities.GameActivity
+import cz.zcu.maturao.tetris.game.Game
+import cz.zcu.maturao.tetris.game.Input
 
 class GameView(context: Context) : SurfaceView(context) {
 //    private val player: MediaPlayer = MediaPlayer.create(context, R.raw.tetris)

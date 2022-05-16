@@ -1,8 +1,6 @@
-package cz.zcu.maturao.tetris
+package cz.zcu.maturao.tetris.android.activities
 
-import android.app.Activity
 import android.content.Intent
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -10,9 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import cz.zcu.maturao.tetris.utils.debugLog
-import java.io.*
-import java.util.prefs.Preferences
+import cz.zcu.maturao.tetris.R
 
 class MainActivity : AppCompatActivity() {
     private var gameState: Bundle? = null

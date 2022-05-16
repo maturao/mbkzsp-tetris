@@ -1,14 +1,15 @@
-package cz.zcu.maturao.tetris
+package cz.zcu.maturao.tetris.game
 
 import android.app.Activity
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import cz.zcu.maturao.tetris.drawing.HomeIcon
-import cz.zcu.maturao.tetris.drawing.ResumeIcon
-import cz.zcu.maturao.tetris.drawing.StopIcon
-import cz.zcu.maturao.tetris.ui.CanvasButton
-import cz.zcu.maturao.tetris.ui.CanvasToggleButton
+import cz.zcu.maturao.tetris.android.GameView
+import cz.zcu.maturao.tetris.game.ui.HomeIcon
+import cz.zcu.maturao.tetris.game.ui.ResumeIcon
+import cz.zcu.maturao.tetris.game.ui.StopIcon
+import cz.zcu.maturao.tetris.game.ui.CanvasButton
+import cz.zcu.maturao.tetris.game.ui.CanvasToggleButton
 import cz.zcu.maturao.tetris.utils.cleared
 import cz.zcu.maturao.tetris.utils.drawAnchoredText
 import kotlin.math.sqrt

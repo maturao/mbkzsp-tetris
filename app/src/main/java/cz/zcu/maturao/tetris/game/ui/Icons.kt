@@ -1,4 +1,4 @@
-package cz.zcu.maturao.tetris.drawing
+package cz.zcu.maturao.tetris.game.ui
 
 import android.graphics.Canvas
 import android.graphics.Paint

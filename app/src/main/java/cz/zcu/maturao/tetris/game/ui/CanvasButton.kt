@@ -1,9 +1,8 @@
-package cz.zcu.maturao.tetris.ui
+package cz.zcu.maturao.tetris.game.ui
 
 import android.graphics.Canvas
-import cz.zcu.maturao.tetris.TouchAction
-import cz.zcu.maturao.tetris.TouchInput
-import cz.zcu.maturao.tetris.drawing.Drawable
+import cz.zcu.maturao.tetris.game.TouchAction
+import cz.zcu.maturao.tetris.game.TouchInput
 import cz.zcu.maturao.tetris.utils.isInside
 
 class CanvasButton(
