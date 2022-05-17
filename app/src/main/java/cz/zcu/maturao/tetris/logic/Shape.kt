@@ -4,15 +4,48 @@ import java.io.Serializable
 import kotlin.math.min
 import kotlin.math.max
 
-class Shape(val squares: Matrix<Square>) : Serializable {
+/**
+ * Tetrisový tvar
+ */
+class Shape(
+    /**
+     * Matice tetrisových čtverců
+     */
+    val squares: Matrix<Square>
+) : Serializable {
+    /**
+     * Nový, otočený tvar
+     */
     fun rotated() = Shape(squares.rotated())
 
+    /**
+     * Střed tvaru
+     */
     val centerRow: Float
+
+    /**
+     * Střed tvaru
+     */
     val centerCol: Float
 
+    /**
+     * Minimální index vyplněného řádku
+     */
     val minRow: Int
+
+    /**
+     * Minimální index vyplněného sloupce
+     */
     val minCol: Int
+
+    /**
+     * Maximální index vyplněného řádku
+     */
     val maxRow: Int
+
+    /**
+     * Maximální index vyplněného sloupce
+     */
     val maxCol: Int
 
     init {
@@ -42,6 +75,10 @@ class Shape(val squares: Matrix<Square>) : Serializable {
     companion object {
         private const val SHAPE_FULL_CHAR = '#'
 
+        /**
+         * Načte tvar z rětezce, kde '#' reprezentuje plný čtverec a ostatní znaky reprezentují prázdný čtverec
+         * Řádky jsou oddělené '\n'
+         */
         fun fromString(fullSquare: Square.Full, string: String): Shape {
             val lines = string.lines()
 

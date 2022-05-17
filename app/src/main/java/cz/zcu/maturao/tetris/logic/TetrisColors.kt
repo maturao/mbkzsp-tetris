@@ -1,5 +1,8 @@
 package cz.zcu.maturao.tetris.logic
 
+/**
+ * Tetrisové barvy
+ */
 object TetrisColors {
     const val CYAN = 0xFF_00F0F0.toInt()
     const val BLUE = 0xFF_0000F0.toInt()

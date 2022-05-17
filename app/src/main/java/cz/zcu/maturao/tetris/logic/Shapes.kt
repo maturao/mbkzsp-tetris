@@ -1,5 +1,8 @@
 package cz.zcu.maturao.tetris.logic
 
+/**
+ * Tetrisové tvary
+ */
 object Shapes {
     val I = Shape.fromString(
         Square.Full.Cyan, """

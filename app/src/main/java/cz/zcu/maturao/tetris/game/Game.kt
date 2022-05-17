@@ -14,23 +14,34 @@ import cz.zcu.maturao.tetris.utils.cleared
 import cz.zcu.maturao.tetris.utils.drawAnchoredText
 import kotlin.math.sqrt
 
+/**
+ * Řídí a vykresluje hru
+ */
 class Game(private val gameView: GameView, private val input: Input) {
     private val foregroundColor = Color.WHITE
     private val paint = Paint()
     private var scoreCache = 0
 
     val stackController = StackController()
+
+    /**
+     * Tlačítko pro zastavení/spuštení hry
+     */
     private val stopToggleButton =
         CanvasToggleButton(
             ResumeIcon(foregroundColor),
             StopIcon(foregroundColor)
         ) {
-            if (!stackController.stack.gameOver) {
+            if (stackController.stack.gameOver) false
+            else {
                 stackController.stopped = it
                 true
-            } else false
+            }
         }
 
+    /**
+     * Zda je hra zastavená
+     */
     var stopped: Boolean
         get() = stopToggleButton.toggled
         set(value) {
@@ -39,10 +50,16 @@ class Game(private val gameView: GameView, private val input: Input) {
             }
         }
 
+    /**
+     * Tlačítko pro návrat do menu
+     */
     private val homeButton = CanvasButton(HomeIcon(foregroundColor)) {
         gameView.gameActivity.exit()
     }
 
+    /**
+     * Aktualizuje stav hry
+     */
     fun update() {
         val touchInput = input.popTouchInput()
 
@@ -52,6 +69,9 @@ class Game(private val gameView: GameView, private val input: Input) {
         updateHighScore()
     }
 
+    /**
+     * Aktualizuje nevyšší skóre
+     */
     private fun updateHighScore() {
         val score = stackController.stack.score.score
         if (scoreCache != score) {
@@ -69,13 +89,21 @@ class Game(private val gameView: GameView, private val input: Input) {
         }
     }
 
+    /**
+     * Vykreslí herní pole
+     */
     fun draw(canvas: Canvas) {
+        // pozadí
         canvas.drawColor(Color.BLACK)
 
         val size = sqrt(canvas.width * canvas.height.toFloat())
 
+        // velikost mezery
         val margin = size * 0.03f
+        // velikost tlačítek a textu
         val elementSize = size * 0.07f
+
+        //vykreslím tlačítka
         stopToggleButton.draw(
             canvas,
             margin,
@@ -91,14 +119,13 @@ class Game(private val gameView: GameView, private val input: Input) {
             elementSize
         )
 
+        // vykreslím skóre
         val score = gameView.game.stackController.stack.score
         paint.cleared {
             color = foregroundColor
             textSize = elementSize * 0.6f
             isFakeBoldText = true
         }
-
-
         canvas.drawAnchoredText(
             "SCORE ${score.score}",
             canvas.width / 2f,
@@ -106,8 +133,7 @@ class Game(private val gameView: GameView, private val input: Input) {
             paint
         )
 
-        val middleMargin = margin * 4
-
+        // aktuální level
         canvas.drawAnchoredText(
             "LEVEL ${score.level}",
             margin,
@@ -117,6 +143,7 @@ class Game(private val gameView: GameView, private val input: Input) {
             0.5f
         )
 
+        // počet vyčistěných řádek
         canvas.drawAnchoredText(
             "LINE ${score.lines}",
             canvas.width - margin,
@@ -126,8 +153,11 @@ class Game(private val gameView: GameView, private val input: Input) {
             0.5f
         )
 
+        // mezera mezi tlačítky a hracím polem
+        val middleMargin = margin * 4
         val stackMarginTop = margin + elementSize + margin + elementSize + middleMargin
 
+        //vykreslím hrací pole
         stackController.draw(
             canvas,
             margin,

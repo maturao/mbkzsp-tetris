@@ -10,9 +10,13 @@ import cz.zcu.maturao.tetris.android.activities.GameActivity
 import cz.zcu.maturao.tetris.game.Game
 import cz.zcu.maturao.tetris.game.Input
 
+/**
+ * View, na které se vykresluje hra
+ */
 class GameView(context: Context) : SurfaceView(context) {
-//    private val player: MediaPlayer = MediaPlayer.create(context, R.raw.tetris)
-
+    /**
+     * Rodičovská aktivita
+     */
     val gameActivity = context as GameActivity
 
     private var gameLoopThread = GameLoopThread(this)
@@ -22,14 +26,12 @@ class GameView(context: Context) : SurfaceView(context) {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        // aktualizuji vstupy
         input.update(event)
         return true
     }
 
     init {
-//        player.isLooping = true
-//        player.start()
-
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
                 gameLoopThread = GameLoopThread(this@GameView)

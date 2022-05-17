@@ -8,6 +8,9 @@ import cz.zcu.maturao.tetris.utils.cleared
 import cz.zcu.maturao.tetris.utils.globalPaint
 import kotlin.math.sqrt
 
+/**
+ * Ikona "stop" - dvě čáry vedle sebe
+ */
 class StopIcon(private val color: Int) : Drawable {
     override fun draw(canvas: Canvas, x: Float, y: Float, width: Float, height: Float) {
         val paint = globalPaint.cleared()
@@ -18,6 +21,9 @@ class StopIcon(private val color: Int) : Drawable {
     }
 }
 
+/**
+ * Nakreslí tvar se zaoblenými rohy
+ */
 private fun drawRoundedShape(
     canvas: Canvas,
     color: Int,
@@ -42,6 +48,9 @@ private fun drawRoundedShape(
     }
 }
 
+/**
+ * Ikona spuštení
+ */
 class ResumeIcon(private val color: Int) : Drawable {
     companion object {
         private val shapePath = Path().apply {
@@ -57,6 +66,9 @@ class ResumeIcon(private val color: Int) : Drawable {
     }
 }
 
+/**
+ * Ikona domečku
+ */
 class HomeIcon(private val color: Int) : Drawable {
     companion object {
         private val shapePath = Path().apply {

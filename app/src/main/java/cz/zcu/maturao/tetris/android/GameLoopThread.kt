@@ -8,6 +8,9 @@ import java.lang.Exception
 import kotlin.math.roundToLong
 import kotlin.random.Random
 
+/**
+ * Vlákno, které řídí vykreslování hry
+ */
 class GameLoopThread(private val view: GameView) : Thread("GameLoopThread ${Random.nextInt()}") {
     var running: Boolean = false
 
