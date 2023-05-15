@@ -3,4 +3,4 @@
 A simple tetris-style Android game made as a semester project.
 This game uses the Android API without any 3rd party libraries.
 
-![example screenshot](doc/screenshot.png)
+<img alt="example screenshot" src="doc/screenshot.png" height="700"/>
